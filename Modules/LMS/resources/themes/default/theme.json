@@ -1,0 +1,9 @@
+{
+    "name": "Default",
+    "slug": "default",
+    "author": "CodexShaper",
+    "description": "A modern and clean theme.",
+    "frontend_layout_prefix": "theme::",
+    "dashboard_layout_prefix": "portal::",
+    "version": "1.0.0"
+}

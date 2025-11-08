@@ -1,0 +1,95 @@
+/*************************************************
+    INDEXING
+**************************************************
+01: SMOOTH SCROLLBAR
+02: FLOWBITE
+03: REMIX
+04: SWIPER
+05: PLYR
+06: 
+07: 
+08: 
+09: 
+10: 
+*/
+
+/*************************************************
+  01: SMOOTH SCROLLBAR
+**************************************************/
+div[class*="scrollbar-track scrollbar-track-"] {
+    @apply bg-transparent w-1.5;
+}
+div[class*="scrollbar-thumb scrollbar-thumb-"] {
+    @apply bg-transparent w-1.5 custom-transition;
+}
+.smooth-scrollbar:hover .scrollbar-thumb {
+    @apply bg-gray-900/50;
+}
+.scrollbar-thumb-x {
+    @apply hidden invisible opacity-0;
+}
+
+/*************************************************
+  02: FLOWBITE
+**************************************************/
+div[drawer-backdrop],
+div[modal-backdrop] {
+    @apply bg-black/50 z-backdrop;
+}
+
+/*************************************************
+  03: REMIX
+**************************************************/
+[class^="ri-"] {
+    @apply text-inherit text-lg !leading-none;
+}
+
+/*************************************************
+  04: SWIPER
+**************************************************/
+.swiper .swiper-wrapper {
+    @apply !items-stretch;
+}
+.swiper .swiper-wrapper .swiper-slide {
+    @apply !h-auto;
+}
+.swiper-custom-pagination {
+    @apply flex-center gap-3;
+}
+.swiper-custom-pagination .swiper-pagination-bullet {
+    @apply size-2.5 rounded-[20px] p-0 m-0 bg-[#111827] duration-300 !important;
+}
+.swiper-custom-pagination
+    .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    @apply w-8 bg-primary duration-300 !important;
+}
+.swiper-custom-pagination-two {
+    @apply flex-center gap-8;
+}
+.swiper-custom-pagination-two .swiper-pagination-bullet {
+    @apply size-2.5 rounded-[20px] p-0 m-0 bg-[#111827] duration-300 !important;
+}
+.swiper-custom-pagination-two.version-white .swiper-pagination-bullet {
+    @apply bg-white/25 !important;
+}
+.swiper-custom-pagination-two
+    .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    @apply bg-primary outline outline-1 outline-offset-[12px] outline-primary duration-300 !important;
+}
+.swiper-custom-pagination-two.version-white
+    .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    @apply bg-white outline-white !important;
+}
+.swiper-custom-pagination-two.version-yellow
+    .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    @apply bg-primary outline-primary !important;
+}
+/*************************************************
+  05: PLYR
+**************************************************/
+div[class^="plyr"] .plyr__video-wrapper {
+    @apply xl:aspect-[16/7] !important;
+}
+.plyr .plyr__controls {
+    @apply bg-white/10 backdrop-blur rounded-lg p-2 md:p-4 m-2 md:m-4 !important;
+}

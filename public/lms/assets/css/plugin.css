@@ -1,0 +1,336 @@
+/*
+************************************************
+    INDEXING
+**************************************************
+01: SMOOTH SCROLLBAR
+02: SELECT2
+03: APEXCHART
+04: SUMMERNOTE
+05: FLATPICKR
+06: CHOICES
+07: FLOWBITE
+08: SWEET ALEART
+09:
+10:
+*/
+
+/*************************************************
+    01: SMOOTH SCROLLBAR
+**************************************************/
+div[class*="scrollbar-track scrollbar-track-"] {
+    @apply bg-transparent w-1.5;
+}
+div[class*="scrollbar-thumb scrollbar-thumb-"] {
+    @apply bg-transparent w-1.5 ac-transition;
+}
+.smooth-scrollbar:hover {
+    .scrollbar-thumb {
+        @apply bg-gray-900/50;
+    }
+}
+.scrollbar-thumb-x {
+    @apply hidden invisible opacity-0;
+}
+
+/*************************************************
+    02: SELECT2
+**************************************************/
+.select2.select2-container {
+    @apply !text-sm;
+}
+.select2.select2-container .select2-selection {
+    @apply border border-input-border dark:border-dark-border-four bg-transparent rounded-md h-[44px] outline-none dk-theme-card-square;
+}
+.select2.select2-container .select2-selection .select2-selection__rendered {
+    @apply text-gray-500 dark:text-dark-text leading-[42px] px-2.5 pr-[33px];
+}
+.select2.select2-container .select2-selection .select2-selection__arrow {
+    @apply h-[42px] w-8 bg-gray-200 dark:bg-dark-icon border-l border-input-border dark:border-dark-border-four rounded-r-md dk-theme-card-square;
+}
+.select2.select2-container .select2-selection--multiple {
+    @apply h-auto min-h-[44px];
+}
+.select2-dropdown {
+    @apply dark:bg-dark-card-two dark:text-dark-text dark:border-dark-border-four dk-theme-card-square;
+}
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    @apply bg-transparent dark:border-dark-border-four dk-theme-card-square;
+}
+.select2-container--default
+    .select2-selection--single
+    .select2-selection__placeholder {
+    @apply font-urbanist font-medium text-gray-500 dark:text-dark-text;
+}
+.select2-container--default .select2-results__option--selected {
+    @apply dark:bg-dark-icon;
+}
+.select2.select2-container
+    .select2-selection--multiple
+    .select2-search--inline
+    .select2-search__field {
+    @apply mt-0;
+}
+.select2.select2-container
+    .select2-selection--multiple
+    .select2-selection__rendered {
+    @apply block py-1 leading-[29px];
+}
+.select2.select2-container
+    .select2-selection--multiple
+    .select2-selection__choice {
+    @apply m-0 mt-[4px] mr-[4px] pr-[6px] h-[24px] leading-[24px] text-xs relative dark:bg-dark-icon dark:border-dark-border-four dk-theme-card-square;
+}
+.select2.select2-container
+    .select2-selection--multiple
+    .select2-selection__choice
+    .select2-selection__choice__remove {
+    @apply text-base text-danger dark:border-dark-border-four dark:hover:bg-dark-card-two dk-theme-card-square;
+}
+.select2-container--default .select2-results > .select2-results__options {
+    @apply text-sm;
+}
+
+/*************************************************
+    03: APEXCHART
+**************************************************/
+.dark .apexcharts-backgroundBar {
+    @apply fill-dark-icon;
+}
+.dark .apexcharts-tooltip.apexcharts-theme-light {
+    @apply bg-dark-tooltip border border-dark-border-four text-dark-text;
+}
+.dark .apexcharts-xaxis-label,
+.dark .apexcharts-yaxis-label {
+    @apply fill-dark-text-two;
+}
+.dark .apexcharts-xcrosshairs,
+.dark .apexcharts-ycrosshairs {
+    @apply stroke-dark-border-four;
+}
+.dark .apexcharts-canvas .apexcharts-tooltip .apexcharts-tooltip-title {
+    @apply bg-dark-tooltip border-b border-dark-border-four;
+}
+.dark .apexcharts-xaxistooltip,
+.dark .apexcharts-yaxistooltip {
+    @apply bg-dark-card-shade border-dark-border text-dark-text;
+}
+.dark .apexcharts-grid .apexcharts-gridline {
+    @apply stroke-[0.5] stroke-dark-border;
+}
+.dark .apexcharts-legend-text {
+    color: #a0a0a0 !important;
+}
+.dark .apexcharts-grid-borders .apexcharts-gridline {
+    @apply stroke-[0.5] stroke-dark-border;
+}
+.dark .apexcharts-grid-borders line,
+.dark .apexcharts-inner .apexcharts-grid-borders line,
+.dark .apexcharts-graphical .apexcharts-grid-borders line {
+    @apply last:stroke-dark-border;
+}
+.dark #total-task-chart .apexcharts-text,
+.dark #total-task-chart .apexcharts-text.apexcharts-datalabel-label {
+    @apply fill-dark-text-two;
+}
+.dark #finance-status-chart .apexcharts-tracks .apexcharts-radialbar-area {
+    @apply stroke-dark-border-five [stroke-opacity:1];
+}
+.dark #analytic-session-overview-chart .apexcharts-series .apexcharts-area {
+    @apply first:fill-dark-chart-layer-one;
+}
+
+.dark
+    #browser-session-chart
+    .apexcharts-series:nth-child(3)
+    .apexcharts-pie-area,
+.dark #projectStatus .apexcharts-series:nth-child(3) .apexcharts-pie-area {
+    @apply fill-dark-chart-layer-one;
+}
+.dark
+    #browser-session-chart
+    .apexcharts-series:nth-child(2)
+    .apexcharts-pie-area,
+.dark #projectStatus .apexcharts-series:nth-child(2) .apexcharts-pie-area {
+    @apply fill-dark-chart-layer-two;
+}
+.dark
+    #browser-session-chart
+    .apexcharts-series:nth-child(1)
+    .apexcharts-pie-area,
+.dark #projectStatus .apexcharts-series:nth-child(1) .apexcharts-pie-area {
+    @apply fill-dark-chart-layer-three;
+}
+.dark
+    #total-task-chart
+    .apexcharts-series:nth-child(1)
+    .apexcharts-radialbar-area {
+    @apply stroke-dark-chart-layer-one;
+}
+.dark
+    #total-task-chart
+    .apexcharts-series:nth-child(2)
+    .apexcharts-radialbar-area {
+    @apply stroke-dark-chart-layer-two;
+}
+.dark
+    #total-task-chart
+    .apexcharts-series:nth-child(3)
+    .apexcharts-radialbar-area {
+    @apply stroke-dark-chart-layer-three;
+}
+.dark #customer-country-chart #jvm-regions-group .jvm-region,
+.dark #sell-by-country-map #jvm-regions-group .jvm-region {
+    @apply stroke-dark-border-five fill-dark-chart-layer-one;
+}
+.dark #customer-country-chart #jvm-markers-labels-group .jvm-marker,
+.dark #sell-by-country-map #jvm-markers-labels-group .jvm-marker {
+    @apply fill-dark-text;
+}
+
+/*************************************************
+    04: SUMMERNOTE
+**************************************************/
+.lms-chat-box .note-editor.note-frame {
+    @apply rounded-none !important;
+}
+.dark .note-editor.note-airframe,
+.dark .note-editor.note-frame {
+    @apply border border-dark-border-four;
+}
+.dark .note-frame {
+    @apply text-dark-text;
+}
+.dark .note-editor .note-toolbar {
+    @apply bg-dark-card-two border-b border-dark-border dk-theme-card-square !important;
+}
+.dark .note-editor .note-toolbar .note-dropdown-menu,
+.dark .note-popover .popover-content .note-dropdown-menu {
+    @apply bg-dark-tooltip border-dark-border;
+}
+.dark .note-editor .note-toolbar .note-dropdown-menu a.note-dropdown-item,
+.dark .note-popover .popover-content .note-dropdown-menu a.note-dropdown-item {
+    @apply text-dark-text;
+}
+.dark .note-editor .note-toolbar .note-btn {
+    @apply text-dark-text bg-dark-card-two border border-dark-border dk-theme-card-square !important;
+}
+.dark .note-editor.note-frame.fullscreen {
+    @apply bg-dark-body;
+}
+
+/*************************************************
+    05: FLATPICKR
+**************************************************/
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    @apply size-10 rounded-md !important;
+}
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    @apply size-10 rounded-md dk-theme-card-square !important;
+}
+.flatpickr-calendar {
+    @apply dk-theme-card-square !important;
+}
+.dark .flatpickr-calendar {
+    @apply bg-dark-tooltip border border-dark-border-four shadow-none;
+}
+.dark .flatpickr-months .flatpickr-prev-month,
+.dark .flatpickr-months .flatpickr-next-month {
+    color: #eee !important;
+    fill: #eee !important;
+    background: #292559;
+}
+.dark .flatpickr-current-month .flatpickr-monthDropdown-months,
+.dark .flatpickr-current-month input.cur-year {
+    color: #d7d7d7;
+}
+.dark .flatpickr-current-month .flatpickr-monthDropdown-months option {
+    background-color: #001;
+}
+.dark .flatpickr-day {
+    color: #d7d7d7;
+}
+.dark .flatpickr-day.flatpickr-disabled,
+.dark .flatpickr-day.flatpickr-disabled:hover,
+.dark .flatpickr-day.prevMonthDay,
+.dark .flatpickr-day.nextMonthDay,
+.dark .flatpickr-day.notAllowed,
+.dark .flatpickr-day.notAllowed.prevMonthDay,
+.dark .flatpickr-day.notAllowed.nextMonthDay {
+    color: #a0a0a0;
+}
+.dark .flatpickr-day.inRange,
+.dark .flatpickr-day.prevMonthDay.inRange,
+.dark .flatpickr-day.nextMonthDay.inRange,
+.dark .flatpickr-day.today.inRange,
+.dark .flatpickr-day.prevMonthDay.today.inRange,
+.dark .flatpickr-day.nextMonthDay.today.inRange,
+.dark .flatpickr-day:hover,
+.dark .flatpickr-day.prevMonthDay:hover,
+.dark .flatpickr-day.nextMonthDay:hover,
+.dark .flatpickr-day:focus,
+.dark .flatpickr-day.prevMonthDay:focus,
+.dark .flatpickr-day.nextMonthDay:focus,
+.dark .flatpickr-day.selected,
+.dark .flatpickr-day.startRange,
+.dark .flatpickr-day.endRange,
+.dark .flatpickr-day.selected.inRange,
+.dark .flatpickr-day.startRange.inRange,
+.dark .flatpickr-day.endRange.inRange,
+.dark .flatpickr-day.selected:focus,
+.dark .flatpickr-day.startRange:focus,
+.dark .flatpickr-day.endRange:focus,
+.dark .flatpickr-day.selected:hover,
+.dark .flatpickr-day.startRange:hover,
+.dark .flatpickr-day.endRange:hover,
+.dark .flatpickr-day.selected.prevMonthDay,
+.dark .flatpickr-day.startRange.prevMonthDay,
+.dark .flatpickr-day.endRange.prevMonthDay,
+.dark .flatpickr-day.selected.nextMonthDay,
+.dark .flatpickr-day.startRange.nextMonthDay,
+.dark .flatpickr-day.endRange.nextMonthDay {
+    background: #292559;
+    border-color: #5b43cb;
+    box-shadow: none !important;
+}
+.dark .flatpickr-calendar.hasTime .flatpickr-time {
+    @apply border-dark-border-four;
+}
+
+/*************************************************
+    06: CHOICES
+**************************************************/
+.dark .choices .choices__inner {
+    @apply border-dark-border-four;
+}
+.dark .choices .choices__list--dropdown,
+.dark .choices__list[aria-expanded] {
+    @apply border-dark-border-four bg-dark-body;
+}
+.dark .choices .choices__input,
+.dark .choices__list--dropdown .choices__item,
+.dark .choices__list[aria-expanded] .choices__item {
+    @apply text-dark-text;
+}
+
+/*************************************************
+    07: FLOWBITE
+  **************************************************/
+div[drawer-backdrop],
+div[modal-backdrop] {
+    @apply bg-black/50 z-backdrop !important;
+}
+.transform-none {
+    @apply !transform-none;
+}
+
+/*************************************************
+    08: SWEET ALEART
+  **************************************************/
+div:where(.swal2-container) div:where(.swal2-popup) {
+    @apply dark:!bg-dark-card-shade;
+}
+div:where(.swal2-container) .swal2-html-container {
+    @apply dark:!text-dark-text;
+}

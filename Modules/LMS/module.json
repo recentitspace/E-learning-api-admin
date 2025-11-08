@@ -1,0 +1,17 @@
+{
+    "name": "LMS",
+    "alias": "lms",
+    "description": "Learning Management System (LMS) module for managing courses, students, and instructors.",
+    "keywords": [],
+    "priority": 0,
+    "providers": ["Modules\\LMS\\Providers\\LMSServiceProvider"],
+    "files": ["app/Helper/functions.php"],
+    "aliases": {},
+    "requires": [],
+    "type": "core",
+    "version": "1.0.0",
+    "author": {
+        "name": "Md Abu Ahsan Basir",
+        "email": "maab.career@gmail.com"
+    }
+}

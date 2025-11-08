@@ -1,0 +1,56 @@
+/*************************************************
+    INDEXING
+**************************************************
+01: GLOBAL
+02: RADIO
+03: CHECKBOX
+04: RATING INPUT
+05: 
+06: 
+*/
+
+/*************************************************
+  01: GLOBAL
+**************************************************/
+.form-label {
+    @apply leading-none text-sm text-heading dark:text-white font-medium mb-2.5 inline-block;
+}
+.floating-form-label {
+    @apply text-gray-500 m-0 bg-white px-2 absolute top-0 -translate-y-1/2 left-2 rtl:left-auto rtl:right-2 scale-90 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-heading dark:text-white peer-focus:text-gray-500 peer-placeholder-shown:top-[21px] peer-focus:top-0 peer-focus:scale-90 z-10 duration-200 !important;
+}
+.floating-form-label.bg-three {
+    @apply !bg-[#FEFBF0];
+}
+.form-input {
+    @apply relative text-sm text-heading dark:text-white font-semibold leading-none h-11 px-4 py-2.5 bg-transparent border border-border rounded-lg focus:border-primary block w-full outline-none custom-transition;
+}
+
+/*************************************************
+  02: RADIO
+**************************************************/
+.radio {
+    @apply appearance-none cursor-pointer flex-center shrink-0 size-4 rounded-50 border-2 border-heading/80 relative before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:size-2 before:rounded-50;
+}
+.radio {
+    @apply [&.radio-primary]:checked:border-heading/80 [&.radio-primary]:checked:before:bg-heading/80;
+}
+
+/*************************************************
+  03: CHECKBOX
+**************************************************/
+.checkbox {
+    @apply appearance-none cursor-pointer flex-center shrink-0 size-4 border-2 border-heading/80 relative before:absolute before:font-remix before:content-['\eb7b'] before:leading-none before:text-[10px] before:text-transparent before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:size-2;
+}
+.checkbox {
+    @apply [&.checkbox-primary]:checked:bg-heading/80 [&.checkbox-primary]:checked:border-heading/80 [&.checkbox-primary]:checked:before:text-white;
+}
+
+/*************************************************
+  04: RATING INPUT
+**************************************************/
+.rating-input {
+    @apply -ms-4 size-5 bg-transparent border-0 text-transparent cursor-pointer disabled:cursor-default disabled:!border-0 appearance-none checked:!bg-none focus:bg-none focus:ring-0 focus:ring-offset-0;
+}
+.rating-label {
+    @apply text-[#E6E6E6] pointer-events-none before:font-remix before:content-['\f186'] text-xl duration-200;
+}

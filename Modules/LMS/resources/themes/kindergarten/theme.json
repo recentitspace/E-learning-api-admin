@@ -1,0 +1,9 @@
+{
+    "name": "Kindergarten",
+    "slug": "kindergarten",
+    "author": "CodexShaper",
+    "description": "A modern and clean theme for children.",
+    "frontend_layout_prefix": "theme::",
+    "dashboard_layout_prefix": "portal::",
+    "version": "1.0.0"
+}

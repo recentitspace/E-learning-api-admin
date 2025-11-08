@@ -1,0 +1,227 @@
+:root {
+  --background-color: rgb(255, 255, 255);
+  --text-color: rgb(75, 85, 99);
+  --dark-background-color: rgb(15, 23, 42);
+  --dark-text-color: rgb(255, 255, 255);
+  --success-color: #10b981;
+  --info-color: #3b82f6;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --success-color-light: hsl(160deg, 70%, 90%);
+  --info-color-light: hsl(217deg, 69%, 90%);
+  --warning-color-light: hsl(33deg, 89%, 90%);
+  --error-color-light: hsl(0deg, 75%, 90%);
+}
+
+.fl-wrapper {
+  position: fixed;
+  z-index: 10;
+  width: 24em;
+  transition: all 1s ease-in-out;
+}
+
+@media only screen and (width <= 480px) {
+  .fl-wrapper {
+    width: 90%;
+    left: 5%;
+    right: 5%;
+  }
+}
+.fl-wrapper[data-position^=top-] {
+  top: 0.5em;
+}
+
+.fl-wrapper[data-position^=bottom-] {
+  bottom: 0.5em;
+}
+
+.fl-wrapper[data-position$=-right] {
+  right: 0.5em;
+}
+
+.fl-wrapper[data-position$=-right] .fl-container {
+  transform: translateX(110%);
+}
+
+.fl-wrapper[data-position$=-left] {
+  left: 0.5em;
+}
+
+.fl-wrapper[data-position$=-left] .fl-container {
+  transform: translateX(-110%);
+}
+
+.fl-wrapper[data-position$=-center] {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.fl-wrapper[data-position=top-center] .fl-container {
+  transform: translateY(-100vh);
+}
+
+.fl-wrapper[data-position=bottom-center] .fl-container {
+  transform: translateY(100vh);
+}
+
+.fl-container {
+  color: var(--text-color);
+  opacity: 0;
+  transform: translate(0, -20px);
+  transition: all 0.5s ease-in-out;
+}
+
+.fl-container.fl-show {
+  opacity: 1;
+  transform: translate(0, 0) !important;
+}
+
+.fl-container.fl-rtl {
+  direction: rtl;
+}
+
+.fl-icon {
+  position: relative;
+  box-sizing: border-box;
+  display: inline-block;
+  width: 1em;
+  min-width: 1em;
+  height: 1em;
+  min-height: 1em;
+  margin: 0;
+  color: white;
+  border-radius: 50%;
+  transition: all 1s;
+}
+
+.fl-icon::before, .fl-icon::after {
+  position: absolute;
+  box-sizing: border-box;
+  content: "";
+  border-width: 0;
+  transition: all 1s;
+}
+
+.fl-success .fl-icon::before, .fl-success .fl-icon::after {
+  top: 0.6em;
+  left: 0.35em;
+  width: 0.16em;
+  height: 0.6em;
+  background-color: currentcolor;
+  border-radius: 0.1em;
+  transform: rotate(-135deg);
+  transform-origin: 0.08em 0.08em;
+}
+
+.fl-success .fl-icon::after {
+  width: 0.4em;
+  height: 0.16em;
+}
+
+.fl-info .fl-icon::before, .fl-info .fl-icon::after {
+  left: 50%;
+  width: 0.15em;
+  background-color: currentcolor;
+  border-radius: 0.03em;
+  transform: translateX(-50%);
+}
+
+.fl-info .fl-icon::before {
+  top: 0.4em;
+  height: 0.38em;
+}
+
+.fl-info .fl-icon::after {
+  top: 0.21em;
+  height: 0.13em;
+  box-shadow: -0.06em 0.19em, -0.06em 0.44em, 0.06em 0.44em;
+}
+
+.fl-warning .fl-icon::before, .fl-warning .fl-icon::after {
+  left: 50%;
+  width: 0.15em;
+  background-color: currentcolor;
+  border-radius: 0.03em;
+  transform: translateX(-50%);
+}
+
+.fl-warning .fl-icon::before {
+  top: 0.21em;
+  height: 0.38em;
+}
+
+.fl-warning .fl-icon::after {
+  top: 0.65em;
+  height: 0.13em;
+}
+
+.fl-error .fl-icon::before, .fl-error .fl-icon::after {
+  top: 50%;
+  left: 50%;
+  width: 0.16em;
+  height: 0.7em;
+  background-color: currentcolor;
+  border-radius: 0.1em;
+  transform: translate(-50%, -50%) rotate(-135deg);
+}
+
+.fl-error .fl-icon::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.fl-success .fl-icon {
+  background-color: var(--success-color);
+}
+
+.fl-info .fl-icon {
+  background-color: var(--info-color);
+}
+
+.fl-warning .fl-icon {
+  background-color: var(--warning-color);
+}
+
+.fl-error .fl-icon {
+  background-color: var(--error-color);
+}
+
+.fl-progress-bar {
+  display: flex;
+  height: 0.125em;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.fl-success .fl-progress-bar {
+  background-color: var(--success-color-light);
+}
+
+.fl-success .fl-progress-bar .fl-progress {
+  background-color: var(--success-color);
+}
+
+.fl-info .fl-progress-bar {
+  background-color: var(--info-color-light);
+}
+
+.fl-info .fl-progress-bar .fl-progress {
+  background-color: var(--info-color);
+}
+
+.fl-warning .fl-progress-bar {
+  background-color: var(--warning-color-light);
+}
+
+.fl-warning .fl-progress-bar .fl-progress {
+  background-color: var(--warning-color);
+}
+
+.fl-error .fl-progress-bar {
+  background-color: var(--error-color-light);
+}
+
+.fl-error .fl-progress-bar .fl-progress {
+  background-color: var(--error-color);
+}/*# sourceMappingURL=index.css.map */

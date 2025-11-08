@@ -1,0 +1,36 @@
+.fl-progress-bar {
+  display: flex;
+  height: 0.125em;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.fl-success .fl-progress-bar {
+  background-color: var(--success-color-light);
+}
+.fl-success .fl-progress-bar .fl-progress {
+  background-color: var(--success-color);
+}
+
+.fl-info .fl-progress-bar {
+  background-color: var(--info-color-light);
+}
+.fl-info .fl-progress-bar .fl-progress {
+  background-color: var(--info-color);
+}
+
+.fl-warning .fl-progress-bar {
+  background-color: var(--warning-color-light);
+}
+.fl-warning .fl-progress-bar .fl-progress {
+  background-color: var(--warning-color);
+}
+
+.fl-error .fl-progress-bar {
+  background-color: var(--error-color-light);
+}
+.fl-error .fl-progress-bar .fl-progress {
+  background-color: var(--error-color);
+}/*# sourceMappingURL=progress.css.map */

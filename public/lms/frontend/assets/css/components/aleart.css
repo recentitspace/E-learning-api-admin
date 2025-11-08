@@ -1,0 +1,12 @@
+.aleart {
+  @apply text-[14px] leading-none flex-center-between px-4 py-3.5 rounded-lg [&.aleart-image]:py-[9px] text-white [&.a-outline]:border;
+}
+.aleart {
+  @apply [&.aleart-primary-light]:bg-primary/10 [&.aleart-primary-light]:text-primary [&.aleart-secondary-light]:bg-secondary/10 [&.aleart-secondary-light]:text-secondary [&.aleart-danger-light]:bg-danger/10 [&.aleart-danger-light]:text-danger [&.aleart-warning-light]:bg-warning/10 [&.aleart-warning-light]:text-warning [&.aleart-success-light]:bg-success/10 [&.aleart-success-light]:text-success [&.aleart-info-light]:bg-info/10 [&.aleart-info-light]:text-info;
+}
+.aleart {
+  @apply [&.aleart-primary-outline]:border-primary/50 [&.aleart-primary-outline]:text-primary [&.aleart-secondary-outline]:border-secondary/50 [&.aleart-secondary-outline]:text-secondary [&.aleart-danger-outline]:border-danger/50 [&.aleart-danger-outline]:text-danger [&.aleart-warning-outline]:border-warning/50 [&.aleart-warning-outline]:text-warning [&.aleart-success-outline]:border-success/50 [&.aleart-success-outline]:text-success [&.aleart-info-outline]:border-info/50 [&.aleart-info-outline]:text-info;
+}
+.aleart {
+  @apply [&.aleart-primary-solid]:bg-primary [&.aleart-primary-solid]:text-white [&.aleart-secondary-solid]:bg-secondary [&.aleart-secondary-solid]:text-white [&.aleart-danger-solid]:bg-danger [&.aleart-danger-solid]:text-white [&.aleart-warning-solid]:bg-warning [&.aleart-warning-solid]:text-white [&.aleart-success-solid]:bg-success [&.aleart-success-solid]:text-white [&.aleart-info-solid]:bg-info [&.aleart-info-solid]:text-white;
+}

@@ -1,0 +1,126 @@
+body.fl-dark .fl-flasher,
+html.fl-dark .fl-flasher {
+  --background-color: var(--dark-background-color);
+  --text-color: var(--dark-text-color);
+}
+
+.fl-flasher {
+  line-height: 1.5;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  word-break: break-word;
+  padding: 0.75em;
+  margin: 0.75em 0;
+  position: relative;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-bottom: none;
+}
+.fl-flasher.fl-rtl {
+  border-radius: 0 0.375em 0.375em 0;
+}
+.fl-flasher:not(.fl-rtl) {
+  border-radius: 0.375em 0 0 0.375em;
+}
+.fl-flasher .fl-content {
+  display: flex;
+  align-items: center;
+}
+.fl-flasher .fl-icon {
+  font-size: 2.5em;
+}
+.fl-flasher .fl-title,
+.fl-flasher .fl-message {
+  display: block;
+  margin-left: 1em;
+  margin-right: 1em;
+  line-height: 1.25em;
+}
+.fl-flasher .fl-title {
+  font-size: 1em;
+  font-weight: bold;
+}
+.fl-flasher .fl-message {
+  margin-top: 0.25em;
+  font-size: 0.875em;
+}
+.fl-flasher .fl-close {
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  top: 1rem;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  margin: -0.5rem;
+  font-size: 25px;
+  line-height: 0;
+  color: #a8aaab;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+.fl-flasher .fl-close:hover {
+  color: #8e9192;
+  transform: scale(1.1);
+}
+.fl-flasher.fl-rtl .fl-close {
+  right: auto;
+  left: 0.5rem;
+}
+.fl-flasher.fl-success {
+  border-left: 0.8em solid var(--success-color);
+}
+.fl-flasher.fl-success.fl-rtl {
+  border-right: 0.8em solid var(--success-color);
+  border-left: none;
+}
+.fl-flasher.fl-success:not(.fl-rtl) {
+  border-right: none;
+  border-left: 0.8em solid var(--success-color);
+}
+.fl-flasher.fl-success .fl-title {
+  color: var(--success-color);
+}
+.fl-flasher.fl-info {
+  border-left: 0.8em solid var(--info-color);
+}
+.fl-flasher.fl-info.fl-rtl {
+  border-right: 0.8em solid var(--info-color);
+  border-left: none;
+}
+.fl-flasher.fl-info:not(.fl-rtl) {
+  border-right: none;
+  border-left: 0.8em solid var(--info-color);
+}
+.fl-flasher.fl-info .fl-title {
+  color: var(--info-color);
+}
+.fl-flasher.fl-warning {
+  border-left: 0.8em solid var(--warning-color);
+}
+.fl-flasher.fl-warning.fl-rtl {
+  border-right: 0.8em solid var(--warning-color);
+  border-left: none;
+}
+.fl-flasher.fl-warning:not(.fl-rtl) {
+  border-right: none;
+  border-left: 0.8em solid var(--warning-color);
+}
+.fl-flasher.fl-warning .fl-title {
+  color: var(--warning-color);
+}
+.fl-flasher.fl-error {
+  border-left: 0.8em solid var(--error-color);
+}
+.fl-flasher.fl-error.fl-rtl {
+  border-right: 0.8em solid var(--error-color);
+  border-left: none;
+}
+.fl-flasher.fl-error:not(.fl-rtl) {
+  border-right: none;
+  border-left: 0.8em solid var(--error-color);
+}
+.fl-flasher.fl-error .fl-title {
+  color: var(--error-color);
+}/*# sourceMappingURL=flasher.css.map */

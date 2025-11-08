@@ -1,0 +1,7 @@
+@font-face {
+  font-family: "summernote";
+  src: url("../../assets/icon-font/summer/summernote.ttf");
+  src: url("../../assets/icon-font/summer/summernote.eot"),
+    url("../../assets/icon-font/summer/summernote.woff"),
+    url("../../assets/icon-font/summer/summernote.woff2");
+}

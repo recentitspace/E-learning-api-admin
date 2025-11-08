@@ -1,0 +1,48 @@
+.btn {
+    @apply font-medium leading-none px-3.5 py-3 flex-center inline-flex gap-2 rounded-lg w-max [&.b-light]:hover:text-white [&.b-solid]:text-white [&.b-solid]:hover:opacity-90 [&.b-outline]:border [&.b-outline]:hover:text-white [&.b-outline]:hover:border-transparent shrink-0 text-center duration-300;
+}
+.btn {
+    @apply [&.btn-primary-light]:bg-primary-200 [&.btn-primary-light]:text-primary [&.btn-primary-light]:hover:bg-primary [&.btn-secondary-light]:bg-secondary/20 [&.btn-secondary-light]:text-secondary [&.btn-secondary-light]:hover:bg-secondary [&.btn-danger-light]:bg-danger/20 [&.btn-danger-light]:text-danger [&.btn-danger-light]:hover:bg-danger [&.btn-warning-light]:bg-warning/20 [&.btn-warning-light]:text-warning [&.btn-warning-light]:hover:bg-warning [&.btn-success-light]:bg-success/20 [&.btn-success-light]:text-success [&.btn-success-light]:hover:bg-success [&.btn-info-light]:bg-info/20 [&.btn-info-light]:text-info [&.btn-info-light]:hover:bg-info [&.btn-disable-light]:bg-disable/20 [&.btn-disable-light]:text-disable [&.btn-disable-light]:hover:bg-disable;
+}
+.btn {
+    @apply [&.btn-primary-solid]:bg-primary [&.btn-secondary-solid]:bg-secondary [&.btn-danger-solid]:bg-danger [&.btn-warning-solid]:bg-warning [&.btn-success-solid]:bg-success [&.btn-info-solid]:bg-info [&.btn-disable-solid]:bg-disable;
+}
+.btn {
+    @apply [&.btn-primary-outline]:text-primary [&.btn-primary-outline]:border-primary/50 [&.btn-primary-outline]:hover:bg-primary [&.btn-secondary-outline]:text-secondary [&.btn-secondary-outline]:border-secondary/50 [&.btn-secondary-outline]:hover:bg-secondary [&.btn-danger-outline]:text-danger [&.btn-danger-outline]:border-danger/50 [&.btn-danger-outline]:hover:bg-danger [&.btn-warning-outline]:text-warning [&.btn-warning-outline]:border-warning/50 [&.btn-warning-outline]:hover:bg-warning [&.btn-success-outline]:text-success [&.btn-success-outline]:border-success/50 [&.btn-success-outline]:hover:bg-success [&.btn-info-outline]:text-info [&.btn-info-outline]:border-info/50 [&.btn-info-outline]:hover:bg-info [&.btn-disable-outline]:text-disable [&.btn-disable-outline]:border-disable/50 [&.btn-disable-outline]:hover:bg-disable;
+}
+.btn {
+    @apply [&.btn-link]:text-primary [&.btn-link]:underline [&.btn-link]:p-0;
+}
+.btn {
+    @apply [&.b-outline-static]:border [&.b-outline-static]:hover:bg-transparent;
+}
+.btn-icon {
+    @apply flex-center leading-none size-11 rounded-50 [&.b-solid]:text-white duration-300;
+}
+.btn-icon {
+    @apply [&.btn-primary-icon-light]:bg-primary/20 [&.btn-primary-icon-light]:text-primary [&.btn-secondary-icon-light]:bg-secondary/20 [&.btn-secondary-icon-light]:text-secondary [&.btn-danger-icon-light]:bg-danger/20 [&.btn-danger-icon-light]:text-danger [&.btn-warning-icon-light]:bg-warning/20 [&.btn-warning-icon-light]:text-warning [&.btn-info-icon-light]:bg-info/20 [&.btn-info-icon-light]:text-info [&.btn-success-icon-light]:bg-success/20 [&.btn-success-icon-light]:text-success;
+}
+.btn-icon {
+    @apply [&.btn-primary-icon-solid]:bg-primary [&.btn-secondary-icon-solid]:bg-secondary [&.btn-danger-icon-solid]:bg-danger [&.btn-warning-icon-solid]:bg-warning [&.btn-success-icon-solid]:bg-success [&.btn-info-icon-solid]:bg-info;
+}
+.btn {
+    @apply [&.btn-sm]:text-[14px] [&.btn-sm]:rounded-md [&.btn-sm]:px-2.5 [&.btn-sm]:py-2;
+}
+.btn {
+    @apply [&.btn-lg]:sm:text-[18px] [&.btn-lg]:rounded-lg [&.btn-lg]:px-4 [&.btn-lg]:py-3 [&.btn-lg]:sm:px-5 [&.btn-lg]:sm:py-3;
+}
+.btn {
+    @apply [&.btn-xl]:rounded-[12px] [&.btn-xl]:px-8 [&.btn-xl]:py-3 [&.btn-xl]:xl:px-9 [&.btn-xl]:xl:py-4;
+}
+/* .btn.effect-one {
+    @apply relative overflow-hidden;
+  }
+  .btn.effect-one-secondary {
+    @apply hover:!text-white hover:bg-heading before:absolute before:left-0 before:w-1/2 before:h-full before:bg-red-500;
+  } */
+.slider-navigation {
+    @apply flex-center size-10 border-2 border-heading/10 rounded-full text-heading font-medium hover:text-white [&.active]:bg-primary [&.active]:text-white [&.active]:border-transparent hover:border-transparent hover:bg-primary custom-transition;
+}
+.slider-navigation {
+    @apply [&.style-two]:size-11 [&.style-two]:rounded-none;
+}

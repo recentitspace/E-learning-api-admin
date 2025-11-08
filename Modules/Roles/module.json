@@ -1,0 +1,17 @@
+{
+    "name": "Roles",
+    "alias": "roles",
+    "description": "Roles and permissions management module for user access control.",
+    "keywords": [],
+    "priority": 0,
+    "providers": ["Modules\\Roles\\Providers\\RolesServiceProvider"],
+    "files": [],
+    "aliases": {},
+    "requires": [],
+    "type": "core",
+    "version": "1.0.0",
+    "author": {
+        "name": "Md Abu Ahsan Basir",
+        "email": "maab.career@gmail.com"
+    }
+}

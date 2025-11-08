@@ -1,0 +1,15 @@
+.badge {
+  @apply text-xs leading-none flex-center gap-2.5 px-3 py-1.5 rounded-[4px] font-medium [&.b-outline]:border [&.b-outline]:py-1.5 [&.b-solid]:text-white w-max;
+}
+.badge {
+  @apply [&.badge-primary-light]:bg-primary/20 [&.badge-primary-light]:text-primary [&.badge-secondary-light]:bg-secondary/20 [&.badge-secondary-light]:text-secondary [&.badge-danger-light]:bg-danger/20 [&.badge-danger-light]:text-danger [&.badge-warning-light]:bg-warning/20 [&.badge-warning-light]:text-warning [&.badge-success-light]:bg-success/20 [&.badge-success-light]:text-success [&.badge-info-light]:bg-info/20 [&.badge-info-light]:text-info [&.badge-disable-light]:bg-disable/20 [&.badge-disable-light]:text-disable;
+}
+.badge {
+  @apply [&.badge-primary-outline]:text-primary [&.badge-primary-outline]:border-primary/50 [&.badge-secondary-outline]:text-secondary [&.badge-secondary-outline]:border-secondary/50 [&.badge-danger-outline]:text-danger [&.badge-danger-outline]:border-danger/50 [&.badge-warning-outline]:text-warning [&.badge-warning-outline]:border-warning/50 [&.badge-success-outline]:text-success [&.badge-success-outline]:border-success/50 [&.badge-info-outline]:text-info [&.badge-info-outline]:border-info/50 [&.badge-disable-outline]:text-disable [&.badge-disable-outline]:border-disable/50;
+}
+.badge {
+  @apply [&.badge-primary-solid]:bg-primary [&.badge-secondary-solid]:bg-secondary [&.badge-danger-solid]:bg-danger [&.badge-warning-solid]:bg-warning [&.badge-success-solid]:bg-success [&.badge-info-solid]:bg-info [&.badge-disable-solid]:bg-disable [&.badge-disable-solid.disable]:bg-gray-200 [&.badge-disable-solid.disable]:text-gray-900;
+}
+.badge {
+  @apply [&.badge-heading-outline]:text-heading/80 [&.badge-heading-outline]:border-heading/10;
+}

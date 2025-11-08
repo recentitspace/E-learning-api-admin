@@ -1,0 +1,19 @@
+{
+    "name": "ModuleManager",
+    "alias": "modulemanager",
+    "description": "Manages installation, uninstallation, and purchasing of modules from third-party sources like Envato.",
+    "keywords": ["modules", "module manager", "envato", "marketplace"],
+    "priority": 0,
+    "providers": [
+        "Modules\\ModuleManager\\Providers\\ModuleManagerServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "type": "core",
+    "version": "1.0.0",
+    "author": {
+        "name": "Md Abu Ahsan Basir",
+        "email": "maab.career@gmail.com"
+    }
+}

@@ -1,0 +1,1 @@
+<x-default:theme::footer.content :theme="$theme" :content="$content" :data="$data" />
