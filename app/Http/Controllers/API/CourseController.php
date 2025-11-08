@@ -40,22 +40,8 @@ class CourseController extends Controller
             $studentsCount = $course->purchases()->count();
             $hours = $course->courseSetting ? ($course->courseSetting->duration ?? $course->courseSetting->hours ?? null) : null;
 
-            // Resolve thumbnail URL safely
-            $thumb = $course->thumbnail ?? null;
-            $thumbUrl = null;
-            if ($thumb) {
-                $t = (string) $thumb;
-                if (Str::startsWith($t, ['http://', 'https://'])) {
-                    $thumbUrl = $t;
-                } elseif (Str::startsWith($t, ['/'])) {
-                    $thumbUrl = asset(ltrim($t, '/'));
-                } elseif (Str::startsWith($t, ['storage/', 'lms/'])) {
-                    $t = ltrim($t, '/');
-                    $thumbUrl = Str::startsWith($t, 'storage/') ? asset($t) : asset('storage/'.$t);
-                } else {
-                    $thumbUrl = asset('storage/lms/courses/thumbnails/'.$t);
-                }
-            }
+            // Resolve thumbnail URL using helper function (route-based, no symlink needed)
+            $thumbUrl = getThumbnailUrl($course->thumbnail ?? null, 'lms/courses/thumbnails');
 
             return [
                 'id' => $course->id,
@@ -296,22 +282,8 @@ class CourseController extends Controller
             $studentsCount = $course->purchases()->count();
             $hours = $course->courseSetting ? ($course->courseSetting->duration ?? $course->courseSetting->hours ?? null) : null;
 
-            // Resolve thumbnail URL safely
-            $thumb = $course->thumbnail ?? null;
-            $thumbUrl = null;
-            if ($thumb) {
-                $t = (string) $thumb;
-                if (Str::startsWith($t, ['http://', 'https://'])) {
-                    $thumbUrl = $t;
-                } elseif (Str::startsWith($t, ['/'])) {
-                    $thumbUrl = asset(ltrim($t, '/'));
-                } elseif (Str::startsWith($t, ['storage/', 'lms/'])) {
-                    $t = ltrim($t, '/');
-                    $thumbUrl = Str::startsWith($t, 'storage/') ? asset($t) : asset('storage/'.$t);
-                } else {
-                    $thumbUrl = asset('storage/lms/courses/thumbnails/'.$t);
-                }
-            }
+            // Resolve thumbnail URL using helper function (route-based, no symlink needed)
+            $thumbUrl = getThumbnailUrl($course->thumbnail ?? null, 'lms/courses/thumbnails');
 
             return [
                 'id' => $course->id,

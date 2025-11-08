@@ -9,6 +9,14 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 class CourseRequest extends FormRequest
 {
     /**
+     * Determine if the user wants to force JSON response
+     */
+    public function wantsJson(): bool
+    {
+        return true; // Always return JSON
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      */
     public function rules(): array
@@ -24,7 +32,7 @@ class CourseRequest extends FormRequest
             'video_src_type' => Request()->form_key == 'basic' ? 'required' : '',
             'subject_id' => Request()->form_key == 'basic' ? 'required' : '',
 
-            'thumbnail' => Request()->form_key == 'basic' ? (isset(Request()->course_id) ? (isset(Request()->thumbnail) ? 'required|image|mimes:jpg,jpeg,png,bmp,tiff,webp,svg' : '') : 'required|image|mimes:jpg,jpeg,png,bmp,tiff,webp,svg') : '',
+            'thumbnail' => Request()->form_key == 'basic' ? (isset(Request()->course_id) ? (isset(Request()->thumbnail) ? 'required' : '') : 'required') : '',
 
 
             // 'demo_url' =>  Request()->form_key == "basic" ? 'required' : "",
@@ -63,8 +71,11 @@ class CourseRequest extends FormRequest
             response()->json(
                 [
                     'status' => 'error',
+                    'message' => 'Validation failed',
                     'data' => $validator->errors(),
-                ]
+                    'errors' => $validator->errors(),
+                ],
+                422
             )
         );
     }

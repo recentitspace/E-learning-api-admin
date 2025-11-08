@@ -15,10 +15,147 @@
     $(document).on("submit", ".form", function (e) {
         e.preventDefault();
         let form = $(this);
-        let formData = new FormData(form[0]);
         let action = form.attr("action");
         let submitButton = $(form).find("button[type='submit']");
         let btnText = submitButton.text();
+        
+        // Check if form has thumbnail file input
+        let thumbnailInput = form.find('input[name="thumbnail"], input[type="file"][id*="thumbnail"]')[0];
+        let hasThumbnailFile = thumbnailInput && thumbnailInput.files && thumbnailInput.files[0];
+        
+        // If thumbnail file exists, convert to base64 and send as JSON
+        if (hasThumbnailFile) {
+            let thumbnailFile = thumbnailInput.files[0];
+            
+            // Validate file type
+            let allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+            if (!allowedTypes.includes(thumbnailFile.type)) {
+                Command: toastr["error"]('Invalid file type. Please upload jpg, png, webp, or gif.');
+                return false;
+            }
+            
+            // Validate file size (max 5MB)
+            if (thumbnailFile.size > 5 * 1024 * 1024) {
+                Command: toastr["error"]('File size must be less than 5MB.');
+                return false;
+            }
+            
+            // Convert file to base64
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let base64String = e.target.result;
+                
+                // Build request data object
+                let requestData = {};
+                
+                // Helper function to convert FormData to object, handling array fields
+                function formDataToObject(formData) {
+                    let obj = {};
+                    let arrayKeys = new Set();
+                    
+                    // First pass: collect all keys and identify array fields
+                    for (let key of formData.keys()) {
+                        // Check if key ends with [] or if it appears multiple times
+                        if (key.endsWith('[]')) {
+                            arrayKeys.add(key);
+                        }
+                    }
+                    
+                    // Second pass: build the object
+                    for (let [key, value] of formData.entries()) {
+                        if (key === 'thumbnail' || value instanceof File) {
+                            continue; // Skip file inputs
+                        }
+                        
+                        // Handle array fields (keys ending with [])
+                        if (key.endsWith('[]')) {
+                            let arrayKey = key.slice(0, -2); // Remove '[]' suffix
+                            if (!obj[arrayKey]) {
+                                obj[arrayKey] = [];
+                            }
+                            // Only add non-empty values
+                            if (value !== null && value !== undefined && value !== '') {
+                                obj[arrayKey].push(value);
+                            }
+                        } else {
+                            // Handle regular fields
+                            // If key already exists and it's not an array, convert to array
+                            if (obj.hasOwnProperty(key)) {
+                                if (!Array.isArray(obj[key])) {
+                                    obj[key] = [obj[key], value];
+                                } else {
+                                    obj[key].push(value);
+                                }
+                            } else {
+                                obj[key] = value;
+                            }
+                        }
+                    }
+                    
+                    // Convert single-item arrays to single values for non-array fields
+                    // But keep arrays for fields that should be arrays (like instructors, levels, languages)
+                    let arrayFieldNames = ['instructors', 'levels', 'languages', 'tags', 'requirements', 'outcomes', 'faqs'];
+                    for (let key in obj) {
+                        if (Array.isArray(obj[key]) && obj[key].length === 1 && !arrayFieldNames.includes(key)) {
+                            obj[key] = obj[key][0];
+                        }
+                    }
+                    
+                    return obj;
+                }
+                
+                // Get all form fields except file inputs
+                let formData = new FormData(form[0]);
+                requestData = formDataToObject(formData);
+                
+                // Add base64 thumbnail
+                requestData.thumbnail = base64String;
+                
+                // Ensure form_key is set
+                if (!requestData.form_key) {
+                    requestData.form_key = 'basic';
+                }
+                
+                // Submit as JSON
+                $.ajax({
+                    url: action,
+                    method: "POST",
+                    data: JSON.stringify(requestData),
+                    dataType: "json",
+                    cache: false,
+                    contentType: "application/json",
+                    processData: false,
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    beforeSend: function () {
+                        submitButton.html(`<div class="animate-spin text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M304 48a48 48 0 1 0-96 0a48 48 0 1 0 96 0m0 416a48 48 0 1 0-96 0a48 48 0 1 0 96 0M48 304a48 48 0 1 0 0-96a48 48 0 1 0 0 96m464-48a48 48 0 1 0-96 0a48 48 0 1 0 96 0M142.9 437A48 48 0 1 0 75 369.1a48 48 0 1 0 67.9 67.9m0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437a48 48 0 1 0 67.9-67.9a48 48 0 1 0-67.9 67.9"/>
+                                </svg>
+                                
+                            </div> ${btnText}`);
+                        submitButton.attr("disabled", true);
+                    },
+                    success: function (data) {
+                        handleFormSuccess(data, form, submitButton, btnText);
+                    },
+                    error: function(xhr, status, error) {
+                        handleFormError(xhr, status, error, form, submitButton, btnText);
+                    }
+                });
+            };
+            reader.onerror = function(error) {
+                Command: toastr["error"]('Error reading file. Please try again.');
+                console.error('FileReader error:', error);
+            };
+            reader.readAsDataURL(thumbnailFile);
+            return false;
+        }
+        
+        // No thumbnail file, submit normally with FormData
+        let formData = new FormData(form[0]);
         
         // Remove _token from FormData if it exists (for login forms)
         if (formData.has('_token')) {
@@ -48,113 +185,10 @@
             },
 
             success: function (data) {
-                console.log(data);
-                if (data.status == "error") {
-                    // Stop loading - reset button state IMMEDIATELY
-                    submitButton.prop("disabled", false);
-                    submitButton.html(`${btnText}`);
-                    submitButton.removeAttr("disabled");
-                    
-                    // Clear any previous error messages
-                    $(form).find(".error-text").text("").hide();
-                    
-                    // Display error message with toastr (red notification) - same syntax as success
-                    if (data.hasOwnProperty("message")) {
-                        Command: toastr["error"](data.message);
-                    }
-                    
-                    // Display field-specific errors if available
-                    if (data.hasOwnProperty("data") && data.data !== "" && typeof data.data === "object") {
-                        logErrorMsg(data.data);
-                    } else if (data.hasOwnProperty("errors") && typeof data.errors === "object") {
-                        logErrorMsg(data.errors);
-                    }
-                } else if (data.status == "success") {
-                    submitButton.removeAttr("disabled", "false");
-                    $(form).find("button[type='submit']").html(`${btnText}`);
-                    
-                    // Check for redirect URL (url or redirect_url)
-                    let redirectUrl = data.url || data.redirect_url;
-                    if (redirectUrl) {
-                        // Show success message briefly then redirect
-                        if (data.hasOwnProperty("message")) {
-                            Command: toastr["success"](`${data.message}`);
-                        }
-                        // Redirect immediately
-                        setTimeout(function() {
-                            window.location.href = redirectUrl;
-                        }, 500);
-                        return; // Exit early to prevent other handlers
-                    }
-                    
-                    if (
-                        data.hasOwnProperty("modal_hide") &&
-                        data.modal_hide == "yes"
-                    ) {
-                        $(".fixed.inset-0").removeClass("flex");
-                        $(".fixed.inset-0").addClass("hidden");
-                    }
-                    if (data.hasOwnProperty("ai_type")) {
-                        $("#outputContent").text(`${data.data}`);
-                    }
-                    if (data.hasOwnProperty("message")) {
-                        Command: toastr["success"](`${data.message}`);
-                    }
-                    if (data.hasOwnProperty("type")) {
-                        location.reload();
-                    }
-
-                    resetForm();
-                }
+                handleFormSuccess(data, form, submitButton, btnText);
             },
             error: function(xhr, status, error) {
-                console.error('Login error:', xhr, status, error, xhr.responseText);
-                
-                // Stop loading - reset button state IMMEDIATELY
-                submitButton.prop("disabled", false);
-                submitButton.html(`${btnText}`);
-                submitButton.removeAttr("disabled");
-                
-                // Clear any previous error messages
-                $(form).find(".error-text").text("").hide();
-                
-                // Try to parse error response
-                let errorMessage = "Login failed. Please try again.";
-                
-                try {
-                    if (xhr.responseText && xhr.responseText.trim() !== "") {
-                        let errorData = JSON.parse(xhr.responseText);
-                        
-                        // Display main error message
-                        if (errorData.message) {
-                            errorMessage = errorData.message;
-                        } else if (errorData.status === "error" && errorData.message) {
-                            errorMessage = errorData.message;
-                        }
-                        
-                        // Display validation errors if available
-                        if (errorData.errors && typeof errorData.errors === "object") {
-                            logErrorMsg(errorData.errors);
-                        } else if (errorData.data && typeof errorData.data === "object") {
-                            logErrorMsg(errorData.data);
-                        }
-                    }
-                } catch(e) {
-                    console.error('Error parsing response:', e);
-                    // If response is not JSON, show generic error based on status
-                    if (xhr.status === 419) {
-                        errorMessage = "Session expired. Please refresh the page and try again.";
-                    } else if (xhr.status === 401) {
-                        errorMessage = "Invalid email or password. Please try again.";
-                    } else if (xhr.status === 422) {
-                        errorMessage = "Validation failed. Please check your input.";
-                    } else if (xhr.status === 500) {
-                        errorMessage = "Server error. Please try again later.";
-                    }
-                }
-                
-                // Display error message with toastr (red notification) - same syntax as success
-                Command: toastr["error"](errorMessage);
+                handleFormError(xhr, status, error, form, submitButton, btnText);
             }
         });
     });
@@ -731,4 +765,117 @@
 
 function resetForm() {
     $(".form").trigger("reset");
+}
+
+// Handle form success response
+function handleFormSuccess(data, form, submitButton, btnText) {
+    console.log(data);
+    if (data.status == "error") {
+        // Stop loading - reset button state IMMEDIATELY
+        submitButton.prop("disabled", false);
+        submitButton.html(`${btnText}`);
+        submitButton.removeAttr("disabled");
+        
+        // Clear any previous error messages
+        $(form).find(".error-text").text("").hide();
+        
+        // Display error message with toastr (red notification) - same syntax as success
+        if (data.hasOwnProperty("message")) {
+            Command: toastr["error"](data.message);
+        }
+        
+        // Display field-specific errors if available
+        if (data.hasOwnProperty("data") && data.data !== "" && typeof data.data === "object") {
+            logErrorMsg(data.data);
+        } else if (data.hasOwnProperty("errors") && typeof data.errors === "object") {
+            logErrorMsg(data.errors);
+        }
+    } else if (data.status == "success") {
+        submitButton.removeAttr("disabled", "false");
+        $(form).find("button[type='submit']").html(`${btnText}`);
+        
+        // Check for redirect URL (url or redirect_url)
+        let redirectUrl = data.url || data.redirect_url;
+        if (redirectUrl) {
+            // Show success message briefly then redirect
+            if (data.hasOwnProperty("message")) {
+                Command: toastr["success"](`${data.message}`);
+            }
+            // Redirect immediately
+            setTimeout(function() {
+                window.location.href = redirectUrl;
+            }, 500);
+            return; // Exit early to prevent other handlers
+        }
+        
+        if (
+            data.hasOwnProperty("modal_hide") &&
+            data.modal_hide == "yes"
+        ) {
+            $(".fixed.inset-0").removeClass("flex");
+            $(".fixed.inset-0").addClass("hidden");
+        }
+        if (data.hasOwnProperty("ai_type")) {
+            $("#outputContent").text(`${data.data}`);
+        }
+        if (data.hasOwnProperty("message")) {
+            Command: toastr["success"](`${data.message}`);
+        }
+        if (data.hasOwnProperty("type")) {
+            location.reload();
+        }
+
+        resetForm();
+    }
+}
+
+// Handle form error response
+function handleFormError(xhr, status, error, form, submitButton, btnText) {
+    console.error('Form error:', xhr, status, error, xhr.responseText);
+    
+    // Stop loading - reset button state IMMEDIATELY
+    submitButton.prop("disabled", false);
+    submitButton.html(`${btnText}`);
+    submitButton.removeAttr("disabled");
+    
+    // Clear any previous error messages
+    $(form).find(".error-text").text("").hide();
+    
+    // Try to parse error response
+    let errorMessage = "Request failed. Please try again.";
+    
+    try {
+        if (xhr.responseText && xhr.responseText.trim() !== "") {
+            let errorData = JSON.parse(xhr.responseText);
+            
+            // Display main error message
+            if (errorData.message) {
+                errorMessage = errorData.message;
+            } else if (errorData.status === "error" && errorData.message) {
+                errorMessage = errorData.message;
+            }
+            
+            // Display validation errors if available
+            if (errorData.errors && typeof errorData.errors === "object") {
+                logErrorMsg(errorData.errors);
+            } else if (errorData.data && typeof errorData.data === "object") {
+                logErrorMsg(errorData.data);
+            }
+        }
+    } catch(e) {
+        console.error('Error parsing response:', e);
+        // If response is not JSON, show generic error based on status
+        if (xhr.status === 419) {
+            errorMessage = "Session expired. Please refresh the page and try again.";
+        } else if (xhr.status === 401) {
+            errorMessage = "Unauthorized. Please login again.";
+        } else if (xhr.status === 422) {
+            errorMessage = "Validation failed. Please check your input.";
+        } else if (xhr.status === 500) {
+            errorMessage = "Server error. Please try again later.";
+        }
+    }
+    
+    // Display error message with toastr (red notification) - same syntax as success
+    Command: toastr["error"](errorMessage);
 }

@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Modules\LMS\Models\Outcomes;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\LMS\Enums\CourseStatus;
 use Modules\LMS\Models\Courses\Tag;
 use Illuminate\Support\Facades\Auth;
@@ -212,11 +213,154 @@ class CourseRepository extends BaseRepository
             $request->video_src_type == 'local' ? $request->merge(['system_video' => $course->short_video ?? null]) : null;
         }
 
-        if ($request->hasFile('thumbnail')) {
-            $thumbnail = $this->handleThumbnailUpload($request, $course->thumbnail ?? '');
+        // Handle thumbnail (file upload or base64)
+        $thumbnail = null;
+        $hasNewThumbnail = false;
+        $oldThumbnail = $course->thumbnail ?? '';
+        
+        \Log::info('Processing thumbnail in handleBasicForm', [
+            'course_id' => $request->course_id,
+            'has_file' => $request->hasFile('thumbnail'),
+            'has_thumbnail_param' => $request->has('thumbnail'),
+            'thumbnail_type' => $request->has('thumbnail') ? gettype($request->thumbnail) : 'N/A',
+            'thumbnail_is_string' => $request->has('thumbnail') ? is_string($request->thumbnail) : false,
+            'thumbnail_is_resource' => $request->has('thumbnail') ? is_resource($request->thumbnail) : false,
+            'old_thumbnail' => $oldThumbnail,
+            'is_create' => empty($request->course_id)
+        ]);
+        
+        // Handle binary data - convert to base64 if needed
+        // Binary data in JSON might come as string but not be recognized as base64
+        if ($request->has('thumbnail')) {
+            $thumbValue = $request->thumbnail;
+            
+            \Log::info('Checking thumbnail data type', [
+                'type' => gettype($thumbValue),
+                'is_string' => is_string($thumbValue),
+                'is_resource' => is_resource($thumbValue),
+                'length' => is_string($thumbValue) ? strlen($thumbValue) : 'N/A',
+                'first_chars' => is_string($thumbValue) ? substr($thumbValue, 0, 50) : 'N/A'
+            ]);
+            
+            // Check if it's binary data (not base64 string, not data URI)
+            $isBinary = false;
+            $binaryData = null;
+            
+            if (is_resource($thumbValue)) {
+                // It's a resource stream
+                $isBinary = true;
+                $binaryData = stream_get_contents($thumbValue);
+                \Log::info('Detected resource, reading binary data', ['length' => strlen($binaryData)]);
+            } elseif (is_string($thumbValue) && !empty($thumbValue)) {
+                // Check if it's NOT a base64 string or data URI
+                $isDataUri = preg_match('/^data:image\//', $thumbValue);
+                $isBase64 = preg_match('/^[\w+\/]+=*$/', $thumbValue) && strlen($thumbValue) > 100;
+                
+                if (!$isDataUri && !$isBase64) {
+                    // Might be binary - check if it contains non-printable characters
+                    $hasBinaryChars = preg_match('/[\x00-\x08\x0B-\x0C\x0E-\x1F]/', $thumbValue);
+                    if ($hasBinaryChars || (strlen($thumbValue) > 100 && !ctype_print($thumbValue))) {
+                        $isBinary = true;
+                        $binaryData = $thumbValue;
+                        \Log::info('Detected binary string data', ['length' => strlen($binaryData)]);
+                    }
+                }
+            }
+            
+            // Convert binary to base64 if detected
+            if ($isBinary && $binaryData) {
+                try {
+                    // Detect mime type from binary data
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $mimeType = finfo_buffer($finfo, substr($binaryData, 0, 1000));
+                    finfo_close($finfo);
+                    
+                    \Log::info('Detected binary thumbnail, detected mime type', ['mime_type' => $mimeType]);
+                    
+                    if (str_starts_with($mimeType, 'image/')) {
+                        // Convert binary to base64 data URI
+                        $base64Data = base64_encode($binaryData);
+                        $thumbnailData = 'data:' . $mimeType . ';base64,' . $base64Data;
+                        $request->merge(['thumbnail' => $thumbnailData]);
+                        \Log::info('Converted binary to base64 data URI', [
+                            'mime_type' => $mimeType,
+                            'data_length' => strlen($binaryData),
+                            'base64_length' => strlen($base64Data)
+                        ]);
+                    } else {
+                        \Log::warning('Binary data does not appear to be an image', ['detected_mime' => $mimeType]);
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Error converting binary to base64: ' . $e->getMessage());
+                }
+            }
         }
-
-        $request->merge(['image' => $thumbnail ?? $course->thumbnail ?? '']);
+        
+        // Handle thumbnail upload - ALWAYS PROCESS BASE64 OR FILE
+        // Check if thumbnail is provided (file upload OR base64 string)
+        $hasThumbnailFile = $request->hasFile('thumbnail');
+        $hasThumbnailBase64 = $request->has('thumbnail') && 
+                              is_string($request->thumbnail) && 
+                              !empty(trim($request->thumbnail));
+        
+        \Log::info('Thumbnail check in handleBasicForm', [
+            'course_id' => $request->course_id,
+            'has_file' => $hasThumbnailFile,
+            'has_base64' => $hasThumbnailBase64,
+            'thumbnail_preview' => $hasThumbnailBase64 ? substr($request->thumbnail, 0, 50) : 'N/A',
+            'old_thumbnail' => $oldThumbnail
+        ]);
+        
+        if ($hasThumbnailFile || $hasThumbnailBase64) {
+            try {
+                $newThumbnail = $this->handleThumbnailUpload($request, $oldThumbnail);
+                
+                \Log::info('handleThumbnailUpload returned', [
+                    'course_id' => $request->course_id,
+                    'new_thumbnail' => $newThumbnail,
+                    'old_thumbnail' => $oldThumbnail,
+                    'is_different' => $newThumbnail !== $oldThumbnail
+                ]);
+                
+                // ALWAYS use new thumbnail if we got one (even if same filename, it means new upload)
+                if ($newThumbnail !== null && $newThumbnail !== '') {
+                    // Check if it's actually different OR if we're updating (force update)
+                    if ($newThumbnail !== $oldThumbnail || $hasThumbnailFile || $hasThumbnailBase64) {
+                        $hasNewThumbnail = true;
+                        $request->merge(['image' => $newThumbnail]);
+                        \Log::info('New thumbnail will be used', [
+                            'course_id' => $request->course_id,
+                            'old_thumbnail' => $oldThumbnail,
+                            'new_thumbnail' => $newThumbnail,
+                            'reason' => $newThumbnail !== $oldThumbnail ? 'Different filename' : 'Force update'
+                        ]);
+                    } else {
+                        // Same filename but no new upload - keep old
+                        $request->merge(['image' => $oldThumbnail]);
+                        \Log::info('Keeping existing thumbnail (same filename, no new upload)', [
+                            'thumbnail' => $oldThumbnail
+                        ]);
+                    }
+                } else {
+                    // Upload failed or returned empty, keep old
+                    $request->merge(['image' => $oldThumbnail]);
+                    \Log::warning('Thumbnail upload returned empty, keeping old', [
+                        'old' => $oldThumbnail
+                    ]);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Thumbnail upload exception in handleBasicForm: ' . $e->getMessage(), [
+                    'course_id' => $request->course_id,
+                    'trace' => $e->getTraceAsString()
+                ]);
+                // On error, keep old thumbnail
+                $request->merge(['image' => $oldThumbnail]);
+            }
+        } else {
+            // No new thumbnail provided, keep existing
+            $request->merge(['image' => $oldThumbnail]);
+            \Log::info('No thumbnail provided, keeping existing', ['thumbnail' => $oldThumbnail]);
+        }
         $formaData = $this->prepareCourseData($request, $slug, $customSlug);
 
         if (! $course) {
@@ -238,9 +382,64 @@ class CourseRepository extends BaseRepository
         $defaultLanguage = app()->getLocale();
         self::translate(course: $course,  data: $translateData, locale: $request->locale);
 
-        if ($request->locale &&  $defaultLanguage === $request->locale) {
-            $course->update($formaData);
+        // SIMPLIFIED: Always update thumbnail if provided, regardless of locale or other conditions
+        if (isset($formaData['thumbnail']) && !empty($formaData['thumbnail'])) {
+            // Direct update - no conditions
+            $course->thumbnail = $formaData['thumbnail'];
+            $course->save();
+            \Log::info('Thumbnail updated directly', [
+                'course_id' => $course->id,
+                'old_thumbnail' => $oldThumbnail,
+                'new_thumbnail' => $formaData['thumbnail'],
+                'has_new_thumbnail' => $hasNewThumbnail
+            ]);
         }
+        
+        // Update course data based on locale
+        if ($request->locale && $defaultLanguage === $request->locale) {
+            // Update all fields (but thumbnail already updated above)
+            $updateData = $formaData;
+            unset($updateData['thumbnail']); // Already updated
+            if (!empty($updateData)) {
+                $course->update($updateData);
+            }
+            $course->refresh();
+            \Log::info('Course updated with all fields (locale match)', [
+                'course_id' => $course->id,
+                'thumbnail' => $course->thumbnail
+            ]);
+        } else {
+            // Update non-translatable fields only (thumbnail already updated above)
+            $nonTranslatableData = [];
+            
+            if (isset($formaData['video_src_type'])) {
+                $nonTranslatableData['video_src_type'] = $formaData['video_src_type'];
+            }
+            if (isset($formaData['short_video'])) {
+                $nonTranslatableData['short_video'] = $formaData['short_video'];
+            }
+            if (isset($formaData['demo_url'])) {
+                $nonTranslatableData['demo_url'] = $formaData['demo_url'];
+            }
+            
+            if (!empty($nonTranslatableData)) {
+                $course->update($nonTranslatableData);
+                $course->refresh();
+                \Log::info('Course non-translatable fields updated', [
+                    'course_id' => $course->id,
+                    'updated_fields' => array_keys($nonTranslatableData),
+                    'thumbnail' => $course->thumbnail
+                ]);
+            }
+        }
+        
+        // Final refresh to ensure we have latest data
+        $course->refresh();
+        \Log::info('Course update complete', [
+            'course_id' => $course->id,
+            'final_thumbnail' => $course->thumbnail,
+            'expected_thumbnail' => $formaData['thumbnail'] ?? 'N/A'
+        ]);
 
         // Sync related models
         $this->syncCourseRelations($course, $request);
@@ -312,8 +511,30 @@ class CourseRepository extends BaseRepository
     private function handleMedia($request)
     {
         $course = parent::first(value: $request->course_id)['data'];
-        $course->thumbnail = $this->handleThumbnailUpload($request, $course->thumbnail);
-        $course->update();
+        $oldThumbnail = $course->thumbnail ?? '';
+        
+        // Handle thumbnail upload (file or base64)
+        if ($request->hasFile('thumbnail') || ($request->has('thumbnail') && is_string($request->thumbnail) && !empty(trim($request->thumbnail)))) {
+            $newThumbnail = $this->handleThumbnailUpload($request, $oldThumbnail);
+            if ($newThumbnail !== null && $newThumbnail !== '' && $newThumbnail !== $oldThumbnail) {
+                $course->thumbnail = $newThumbnail;
+                $course->save();
+                $course->refresh(); // Force refresh to ensure update
+                \Log::info('Media form: Thumbnail updated', [
+                    'course_id' => $course->id,
+                    'old_thumbnail' => $oldThumbnail,
+                    'new_thumbnail' => $newThumbnail
+                ]);
+            } else {
+                \Log::warning('Media form: Thumbnail not updated', [
+                    'course_id' => $course->id,
+                    'old_thumbnail' => $oldThumbnail,
+                    'new_thumbnail' => $newThumbnail,
+                    'reason' => $newThumbnail === $oldThumbnail ? 'Same filename' : 'Upload failed'
+                ]);
+            }
+        }
+        
         $this->previewImage($course->id, $request->preview_image);
 
         return $this->successResponse($request->course_id, $request->form_key);
@@ -573,11 +794,104 @@ class CourseRepository extends BaseRepository
      */
     protected function handleThumbnailUpload($request, $thumbnail)
     {
+        \Log::info('handleThumbnailUpload called', [
+            'has_file' => $request->hasFile('thumbnail'),
+            'has_thumbnail_param' => $request->has('thumbnail'),
+            'thumbnail_type' => $request->has('thumbnail') ? gettype($request->thumbnail) : 'N/A',
+            'old_thumbnail' => $thumbnail
+        ]);
 
+        // Handle file upload
         if ($request->hasFile('thumbnail')) {
-            return parent::upload($request, 'thumbnail', file: $thumbnail ?? '', folder: 'lms/courses/thumbnails');
+            try {
+                $uploadedFile = parent::upload($request, 'thumbnail', file: $thumbnail ?? '', folder: 'lms/courses/thumbnails');
+                if ($uploadedFile) {
+                    \Log::info('File thumbnail uploaded successfully: ' . $uploadedFile);
+                    return $uploadedFile;
+                } else {
+                    \Log::error('File thumbnail upload returned null/empty');
+                    throw new \Exception('File upload returned null');
+                }
+            } catch (\Exception $e) {
+                \Log::error('File thumbnail upload failed: ' . $e->getMessage(), [
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw $e; // Re-throw to surface the error
+            }
         }
 
+        // Handle base64 image
+        if ($request->has('thumbnail') && is_string($request->thumbnail) && !empty(trim($request->thumbnail))) {
+            $thumbnailData = trim($request->thumbnail);
+            \Log::info('Processing base64 thumbnail', [
+                'data_length' => strlen($thumbnailData),
+                'starts_with_data' => str_starts_with($thumbnailData, 'data:image/'),
+                'preview' => substr($thumbnailData, 0, 50)
+            ]);
+            
+            // Check if it's a base64 data URI (starts with data:image/)
+            if (preg_match('/^data:image\//', $thumbnailData)) {
+                try {
+                    $result = parent::base64ImgUpload($thumbnailData, file: $thumbnail ?? '', folder: 'lms/courses/thumbnails');
+                    $newThumbnail = $result['imageName'] ?? null;
+                    if ($newThumbnail) {
+                        \Log::info('Base64 thumbnail uploaded successfully: ' . $newThumbnail);
+                        return $newThumbnail;
+                    } else {
+                        \Log::error('Base64 thumbnail upload returned null imageName', [
+                            'result' => $result
+                        ]);
+                        throw new \Exception('Base64 upload returned null imageName');
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Base64 thumbnail upload failed: ' . $e->getMessage(), [
+                        'thumbnail_length' => strlen($thumbnailData),
+                        'thumbnail_preview' => substr($thumbnailData, 0, 50),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    throw $e; // Re-throw to surface the error
+                }
+            }
+            
+            // Check if it's raw base64 (try to decode it)
+            $decoded = base64_decode($thumbnailData, true);
+            if ($decoded !== false && strlen($thumbnailData) > 100 && strlen($decoded) > 0) {
+                \Log::info('Detected raw base64, adding data URI prefix');
+                $thumbnailData = 'data:image/png;base64,' . $thumbnailData;
+                try {
+                    $result = parent::base64ImgUpload($thumbnailData, file: $thumbnail ?? '', folder: 'lms/courses/thumbnails');
+                    $newThumbnail = $result['imageName'] ?? null;
+                    if ($newThumbnail) {
+                        \Log::info('Base64 thumbnail uploaded successfully (raw): ' . $newThumbnail);
+                        return $newThumbnail;
+                    } else {
+                        \Log::error('Raw base64 thumbnail upload returned null imageName');
+                        throw new \Exception('Raw base64 upload returned null imageName');
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Base64 thumbnail upload failed (raw): ' . $e->getMessage(), [
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    throw $e; // Re-throw to surface the error
+                }
+            } else {
+                \Log::warning('Thumbnail data does not appear to be valid base64', [
+                    'decoded' => $decoded !== false,
+                    'data_length' => strlen($thumbnailData),
+                    'decoded_length' => $decoded !== false ? strlen($decoded) : 0
+                ]);
+            }
+        } else {
+            \Log::warning('No thumbnail provided or invalid format', [
+                'has_thumbnail' => $request->has('thumbnail'),
+                'is_string' => $request->has('thumbnail') ? is_string($request->thumbnail) : false,
+                'not_empty' => $request->has('thumbnail') && is_string($request->thumbnail) ? !empty(trim($request->thumbnail)) : false
+            ]);
+        }
+
+        \Log::warning('handleThumbnailUpload returning old thumbnail (no new upload)', [
+            'old_thumbnail' => $thumbnail
+        ]);
         return $thumbnail;
     }
 

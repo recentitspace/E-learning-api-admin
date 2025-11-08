@@ -68,6 +68,86 @@ if (!function_exists('fileExists')) {
     }
 }
 
+if (!function_exists('getThumbnailUrl')) {
+    /**
+     * Get the correct thumbnail URL for a course or other entity.
+     * Uses route-based serving (no symlink required).
+     * Includes cache busting to prevent browser caching of old images.
+     *
+     * @param string|null $thumbnail The thumbnail filename
+     * @param string $folder The folder path (e.g., 'lms/courses/thumbnails')
+     * @param string|null $placeholder Optional placeholder image path
+     * @param bool $addCacheBusting Whether to add cache busting parameter (default: true)
+     * @return string The full URL to the thumbnail or placeholder
+     */
+    function getThumbnailUrl(?string $thumbnail, string $folder = 'lms/courses/thumbnails', ?string $placeholder = null, bool $addCacheBusting = true): string
+    {
+        // Default placeholder
+        $defaultPlaceholder = $placeholder ?? asset('lms/assets/images/placeholder/thumbnail612.jpg');
+        
+        if (empty($thumbnail)) {
+            return $defaultPlaceholder;
+        }
+        
+        // Check if file exists
+        if (fileExists($folder, $thumbnail)) {
+            // Use route-based URL (works without symlink)
+            // Route: /storage/lms/{path} where {path} should NOT include 'lms/' prefix
+            // Route handler does: 'public/lms/' . $path
+            // File is stored at: public/lms/courses/thumbnails/filename.jpg
+            // So path should be: courses/thumbnails/filename.jpg
+            
+            // Remove 'lms/' prefix from folder if it exists (case-insensitive check)
+            $cleanFolder = ltrim($folder, '/');
+            // Check if folder starts with 'lms/' (case-insensitive for safety)
+            if (stripos($cleanFolder, 'lms/') === 0) {
+                // Remove 'lms/' prefix (4 characters)
+                $cleanFolder = substr($cleanFolder, 4);
+            }
+            // Also remove any leading slashes after removing 'lms/'
+            $cleanFolder = ltrim($cleanFolder, '/');
+            
+            // Construct path: folder/filename (without 'lms/' prefix)
+            $path = $cleanFolder . '/' . $thumbnail;
+            // Result: courses/thumbnails/filename.jpg
+            
+            // URL: storage/lms/{path} where path = courses/thumbnails/filename.jpg
+            // Final URL: storage/lms/courses/thumbnails/filename.jpg
+            $url = url("storage/lms/{$path}");
+            
+            // Add cache busting to prevent browser from showing old cached images
+            // Use file modification time if available, otherwise use current time
+            if ($addCacheBusting) {
+                $filePath = base_path("Modules/LMS/storage/app/public/{$folder}/{$thumbnail}");
+                if (file_exists($filePath)) {
+                    // Use file modification time for cache busting - changes when file is updated
+                    $cacheBuster = filemtime($filePath);
+                } else {
+                    // Fallback to current time if file path doesn't exist
+                    $cacheBuster = time();
+                }
+                
+                // Check if URL already has query parameters or cache-busting parameter
+                $hasQueryParams = strpos($url, '?') !== false;
+                $hasCacheBuster = strpos($url, '?v=') !== false || strpos($url, '&v=') !== false;
+                
+                // Only add cache busting if URL doesn't already have it
+                if (!$hasQueryParams) {
+                    $url .= '?v=' . $cacheBuster;
+                } elseif (!$hasCacheBuster) {
+                    // URL has query params but no cache buster - append with &
+                    $url .= '&v=' . $cacheBuster;
+                }
+                // If URL already has cache buster, don't add again (avoid duplicates)
+            }
+            
+            return $url;
+        }
+        
+        return $defaultPlaceholder;
+    }
+}
+
 if (!function_exists('get_all_country')) {
     /**
      * Retrieve all countries.

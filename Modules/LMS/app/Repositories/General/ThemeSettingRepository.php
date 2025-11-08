@@ -36,41 +36,65 @@ class ThemeSettingRepository extends BaseRepository
 
     public static function base64ImgUpload($requesFile, $file, $folder)
     {
-
+        // Extract mime type and base64 data
         if (preg_match('/^data:image\/(\w+);base64,/', $requesFile, $matches)) {
             $extension = $matches[1]; // Extracts "png", "jpg", etc.
+            $base64String = preg_replace('#^data:image/\w+;base64,#i', '', $requesFile);
         } else {
-            $extension = 'webp'; // Default fallback
+            // If no data URI prefix, assume it's raw base64
+            $base64String = $requesFile;
+            $extension = 'png'; // Default fallback
         }
-        // Remove the Base64 prefix
-        $base64String = preg_replace('#^data:image/\w+;base64,#i', '', $requesFile);
 
         // Decode Base64
-        $image = base64_decode($base64String);
+        $image = base64_decode($base64String, true); // Use strict mode
 
-        if ($image === false) {
-
+        if ($image === false || empty($image)) {
             return [
                 'status' => 'error',
                 'message' => translate('Invalid Base64 image data.'),
             ];
         }
+        
         // Generate Image Name
         $imageName = 'lms-' . Str::random(10) . '.' . ($extension === 'svg+xml' ? 'svg' : $extension);
 
-        // Handle File Storage
-        if (!empty($file)) {
-            $filePath = 'public/' . $folder . '/' . $file;
-            if (Storage::disk('LMS')->exists($filePath)) {
-                Storage::disk('LMS')->delete($filePath);
+        // Ensure directory exists
+        $directoryPath = 'public/' . $folder;
+        if (!Storage::disk('LMS')->exists($directoryPath)) {
+            Storage::disk('LMS')->makeDirectory($directoryPath);
+        }
+
+        // Handle File Storage - delete old file if exists
+        if (!empty($file) && $file != null) {
+            $oldFilePath = 'public/' . $folder . '/' . $file;
+            if (Storage::disk('LMS')->exists($oldFilePath)) {
+                Storage::disk('LMS')->delete($oldFilePath);
             }
         }
+        
         // Save the image
-        Storage::disk('LMS')->put('public/' . $folder . '/' . $imageName, $image);
+        $filePath = 'public/' . $folder . '/' . $imageName;
+        $saved = Storage::disk('LMS')->put($filePath, $image);
+        
+        if (!$saved) {
+            return [
+                'status' => 'error',
+                'message' => translate('Failed to save image file to storage.'),
+            ];
+        }
+        
+        // Verify file was actually saved
+        if (!Storage::disk('LMS')->exists($filePath)) {
+            return [
+                'status' => 'error',
+                'message' => translate('File was not saved - verification failed.'),
+            ];
+        }
 
         return [
             'imageName' => $imageName,
-            'path' => asset('storage/' . $folder . '/' . $imageName),
+            'path' => url('storage/lms/' . ltrim($folder, '/') . '/' . $imageName),
         ];
     }
     /**

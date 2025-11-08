@@ -58,10 +58,11 @@
                         $translations = parse_translation($course);
                         $title = $translations['title'] ?? ($course->title ?? '');
                         $instructors = $course->instructors ?? [];
-                        $thumbnail =
-                            fileExists('lms/courses/thumbnails', $course->thumbnail) == true
-                                ? asset("storage/lms/courses/thumbnails/{$course->thumbnail}")
-                                : asset('lms/assets/images/placeholder/thumbnail612.jpg');
+                        
+                        // Use helper function to get thumbnail URL with cache busting
+                        // Force refresh course model to get latest thumbnail
+                        $course->refresh();
+                        $thumbnail = getThumbnailUrl($course->thumbnail ?? null, 'lms/courses/thumbnails', null, true);
 
                         if ($course->trashed()) {
                             $title = translate('Are you sure you want to delete this permanently');
