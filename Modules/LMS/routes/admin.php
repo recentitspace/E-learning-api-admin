@@ -281,7 +281,10 @@ Route::group(
                 Route::get('new-create', 'create')->name('create');
                 Route::post('enrolled', 'enrolled')->name('store');
                 Route::get('enrolled/edit/{id}', 'edit')->name('edit');
+                Route::put('enrolled/update/{id}', 'update')->name('update');
+                Route::patch('enrolled/update/{id}', 'update');
                 Route::get('enrolled/show/{id}', 'show')->name('show');
+                Route::post('approve/{id}', 'approve')->name('approve');
                 Route::delete('enrolled/destroy/{id}', 'destroy')->name('destroy');
             }
         );

@@ -8,6 +8,7 @@ use App\Http\Controllers\API\BundleController;
 use App\Http\Controllers\API\BlogController;
 use App\Http\Controllers\API\ForumController;
 use App\Http\Controllers\API\InstructorController;
+use App\Http\Controllers\API\EnrollmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,12 @@ Route::get('/bundles/{bundle}', [BundleController::class, 'show']);
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{blog}', [BlogController::class, 'show']);
 Route::post('/blogs/{blog}/comments', [BlogController::class, 'comment']);
+
+// Enrollments (public - no authentication required)
+Route::get('/enrollments', [EnrollmentController::class, 'index']);
+Route::post('/enrollments', [EnrollmentController::class, 'store']);
+Route::put('/enrollments/{id}', [EnrollmentController::class, 'update']);
+Route::patch('/enrollments/{id}', [EnrollmentController::class, 'update']);
 
 // Forums
 Route::get('/forums', [ForumController::class, 'index']);
